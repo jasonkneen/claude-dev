@@ -1,5 +1,47 @@
 # Change Log
 
+## [2.0.14]
+
+- Gracefully cancel requests while stream could be hanging
+
+## [2.0.13]
+
+- Detect code omission and show warning with troubleshooting link
+
+## [2.0.12]
+
+- Keep cursor out of the way during file edit streaming animation
+
+## [2.0.11]
+
+- Adjust prompts around read_file to prevent re-reading files unnecessarily
+
+## [2.0.10]
+
+- More adjustments to system prompt to prevent lazy coding
+
+## [2.0.9]
+
+- Update system prompt to try to prevent Cline from lazy coding (`// rest of code here...`)
+
+## [2.0.8]
+
+- Fix o1-mini and o1-preview for OpenAI
+- Fix diff editor not opening sometimes in slow environments like project idx
+
+## [2.0.7]
+
+- Misc. bug fixes
+
+## [2.0.6]
+
+- Update URLs to https://github.com/cline/cline
+
+## [2.0.5]
+
+- Fixed bug where Cline's edits would stream into the active tab when switching tabs during a write_to_file
+- Added explanation in task continuation prompt that an interrupted write_to_file reverts the file to its original contents, preventing unnecessary re-reads
+- Fixed non-first chunk error handling in case stream fails mid-way through
 
 ## [2.0.0]
 

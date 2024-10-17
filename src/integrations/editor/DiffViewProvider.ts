@@ -89,16 +89,17 @@ export class DiffViewProvider {
 			accumulatedLines.pop() // remove the last partial line only if it's not the final update
 		}
 		const diffLines = accumulatedLines.slice(this.streamedLines.length)
-		const document = vscode.window.activeTextEditor?.document
-		if (!document) {
-			console.error("No active text editor")
-			return
+
+		const diffEditor = this.activeDiffEditor
+		const document = diffEditor?.document
+		if (!diffEditor || !document) {
+			throw new Error("User closed text editor, unable to edit file...")
 		}
-		const diffViewEditor = vscode.window.activeTextEditor
-		if (!diffViewEditor) {
-			console.error("No active diff view editor")
-			return
-		}
+
+		// Place cursor at the beginning of the diff editor to keep it out of the way of the stream animation
+		const beginningOfDocument = new vscode.Position(0, 0)
+		diffEditor.selection = new vscode.Selection(beginningOfDocument, beginningOfDocument)
+
 		for (let i = 0; i < diffLines.length; i++) {
 			const currentLine = this.streamedLines.length + i
 			// Replace all content up to the current line with accumulated lines
@@ -292,11 +293,11 @@ export class DiffViewProvider {
 				uri,
 				`${fileName}: ${fileExists ? "Original ↔ Cline's Changes" : "New File"} (Editable)`
 			)
-			// This should never happen but if it does it's worth investigating
+			// This may happen on very slow machines ie project idx
 			setTimeout(() => {
 				disposable.dispose()
-				reject(new Error("Failed to open diff editor"))
-			}, 5_000)
+				reject(new Error("Failed to open diff editor, please try again..."))
+			}, 10_000)
 		})
 	}
 
