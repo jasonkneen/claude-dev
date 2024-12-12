@@ -130,7 +130,7 @@ To contribute to the project, start by exploring [open issues](https://github.co
     code cline
     ```
 3. Install the necessary dependencies for the extension and webview-gui:
-    ```bash
+    f```bash
     npm run install:all
     ```
 4. Launch by pressing `F5` (or `Run`->`Start Debugging`) to open a new VSCode window with the extension loaded. (You may need to install the [esbuild problem matchers extension](https://marketplace.visualstudio.com/items?itemName=connor4312.esbuild-problem-matchers) if you run into issues building the project.)
