@@ -127,12 +127,6 @@ Parameters:
     * Example: <coordinate>450,300</coordinate>
 - text: (optional) Use this for providing the text for the \`type\` action.
     * Example: <text>Hello, world!</text>
-Usage:
-<browser_action>
-<action>Action to perform (e.g., launch, click, type, scroll_down, scroll_up, close)</action>
-<url>URL to launch the browser at (optional)</url>
-<coordinate>x,y coordinates (optional)</coordinate>
-<text>Text to type (optional)</text>
 </browser_action>`
 		: ""
 }
@@ -749,3 +743,102 @@ The following additional instructions are provided by the user, and should be fo
 
 ${customInstructions.trim()}`
 }
+
+export const MULTIPLE_PROMPTS = [
+	{
+		name: "Default",
+		description: "The default system prompt for general tasks.",
+		prompt: SYSTEM_PROMPT,
+	},
+	{
+		name: "Web Development",
+		description: "A system prompt tailored for web development tasks.",
+		prompt: async (cwd: string, supportsComputerUse: boolean, mcpHub: McpHub) => {
+			const basePrompt = await SYSTEM_PROMPT(cwd, supportsComputerUse, mcpHub)
+			return `${basePrompt}
+
+====
+
+WEB DEVELOPMENT GUIDELINES
+
+- When working on web development tasks, prioritize using modern web technologies such as HTML5, CSS3, and JavaScript (ES6+).
+- Ensure that the code you write is responsive and works well on different screen sizes and devices.
+- Follow best practices for web performance optimization, including minimizing HTTP requests, optimizing images, and using efficient CSS and JavaScript.
+- Use semantic HTML elements to improve accessibility and SEO.
+- When working with frameworks or libraries (e.g., React, Angular, Vue), adhere to their specific best practices and conventions.
+- Test your changes in multiple browsers to ensure cross-browser compatibility.
+- When using the browser_action tool, pay attention to the visual appearance and functionality of the web pages you interact with. Ensure that elements are correctly positioned and styled, and that interactive elements (e.g., buttons, links) work as expected.
+- If you encounter any issues with the web pages you are working on, use the browser's developer tools to inspect and debug the HTML, CSS, and JavaScript.
+
+====
+
+WEB DEVELOPMENT TOOLS
+
+In addition to the general tools available, you have access to the following web development-specific tools:
+
+## fetch_url
+Description: Request to fetch the content of a URL. Use this when you need to retrieve the HTML, CSS, or JavaScript content of a web page.
+Parameters:
+- url: (required) The URL to fetch.
+Usage:
+<fetch_url>
+<url>https://example.com</url>
+</fetch_url>
+
+## take_screenshot
+Description: Request to take a screenshot of the current state of the browser. Use this to capture the visual appearance of a web page at a specific point in time.
+Parameters: None
+Usage:
+<take_screenshot></take_screenshot>`
+		},
+	},
+	{
+		name: "Data Science",
+		description: "A system prompt tailored for data science tasks.",
+		prompt: async (cwd: string, supportsComputerUse: boolean, mcpHub: McpHub) => {
+			const basePrompt = await SYSTEM_PROMPT(cwd, supportsComputerUse, mcpHub)
+			return `${basePrompt}
+
+====
+
+DATA SCIENCE GUIDELINES
+
+- When working on data science tasks, prioritize using Python and popular data science libraries such as NumPy, pandas, scikit-learn, and TensorFlow.
+- Ensure that your code is well-documented and includes comments explaining the purpose and functionality of each section.
+- Follow best practices for data cleaning, preprocessing, and feature engineering.
+- Use appropriate data visualization techniques to present your findings, such as matplotlib, seaborn, or Plotly.
+- When building machine learning models, ensure that you split your data into training, validation, and test sets to evaluate the performance of your models.
+- Use cross-validation and hyperparameter tuning to optimize your models.
+- When working with large datasets, consider using techniques such as parallel processing or distributed computing to improve performance.
+- If you encounter any issues with your code or data, use debugging tools and techniques to identify and resolve the problems.
+
+====
+
+DATA SCIENCE TOOLS
+
+In addition to the general tools available, you have access to the following data science-specific tools:
+
+## load_dataset
+Description: Request to load a dataset from a specified file. Use this when you need to read data from a CSV, Excel, or other file formats.
+Parameters:
+- path: (required) The path of the dataset file (relative to the current working directory ${cwd.toPosix()}).
+Usage:
+<load_dataset>
+<path>data.csv</path>
+</load_dataset>
+
+## save_dataset
+Description: Request to save a dataset to a specified file. Use this when you need to write data to a CSV, Excel, or other file formats.
+Parameters:
+- path: (required) The path of the dataset file (relative to the current working directory ${cwd.toPosix()}).
+- content: (required) The content of the dataset to save.
+Usage:
+<save_dataset>
+<path>data.csv</path>
+<content>
+Your dataset content here
+</content>
+</save_dataset>`
+		},
+	},
+]
