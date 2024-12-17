@@ -19,6 +19,8 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 		setCustomInstructions,
 		alwaysAllowReadOnly,
 		setAlwaysAllowReadOnly,
+		alwaysAllowAutomaticMode,
+		setAlwaysAllowAutomaticMode,
 		openRouterModels,
 	} = useExtensionState()
 	const [apiErrorMessage, setApiErrorMessage] = useState<string | undefined>(undefined)
@@ -33,6 +35,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 			vscode.postMessage({ type: "apiConfiguration", apiConfiguration })
 			vscode.postMessage({ type: "customInstructions", text: customInstructions })
 			vscode.postMessage({ type: "alwaysAllowReadOnly", bool: alwaysAllowReadOnly })
+			vscode.postMessage({ type: "alwaysAllowAutomaticMode", bool: alwaysAllowAutomaticMode })
 			onDone()
 		}
 	}
@@ -127,6 +130,22 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 						}}>
 						When enabled, Cline will automatically view directory contents and read files without requiring
 						you to click the Approve button.
+					</p>
+				</div>
+
+				 <div style={{ marginBottom: 5 }}>
+					<VSCodeCheckbox
+						checked={alwaysAllowAutomaticMode}
+						onChange={(e: any) => setAlwaysAllowAutomaticMode(e.target.checked)}>
+						<span style={{ fontWeight: "500" }}>Always allow automatic mode</span>
+					</VSCodeCheckbox>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: "5px",
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						When enabled, Cline will automatically approve all actions, not just read-only ones, without requiring you to click the Approve button.
 					</p>
 				</div>
 

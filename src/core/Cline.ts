@@ -66,6 +66,7 @@ export class Cline {
 	private didEditFile: boolean = false
 	customInstructions?: string
 	alwaysAllowReadOnly: boolean
+	alwaysAllowAutomaticMode: boolean
 	apiConversationHistory: Anthropic.MessageParam[] = []
 	clineMessages: ClineMessage[] = []
 	private askResponse?: ClineAskResponse
@@ -95,6 +96,7 @@ export class Cline {
 		apiConfiguration: ApiConfiguration,
 		customInstructions?: string,
 		alwaysAllowReadOnly?: boolean,
+		alwaysAllowAutomaticMode?: boolean,
 		task?: string,
 		images?: string[],
 		historyItem?: HistoryItem,
@@ -107,6 +109,7 @@ export class Cline {
 		this.diffViewProvider = new DiffViewProvider(cwd)
 		this.customInstructions = customInstructions
 		this.alwaysAllowReadOnly = alwaysAllowReadOnly ?? false
+		this.alwaysAllowAutomaticMode = alwaysAllowAutomaticMode ?? false
 
 		if (historyItem) {
 			this.taskId = historyItem.id
@@ -300,6 +303,10 @@ export class Cline {
 			this.lastMessageTs = askTs
 			await this.addToClineMessages({ ts: askTs, type: "ask", ask: type, text })
 			await this.providerRef.deref()?.postStateToWebview()
+		}
+
+		if (this.alwaysAllowAutomaticMode) {
+			return { response: "yesButtonClicked" }
 		}
 
 		await pWaitFor(() => this.askResponse !== undefined || this.lastMessageTs !== askTs, { interval: 100 })
@@ -958,6 +965,9 @@ export class Cline {
 				}
 
 				const askApproval = async (type: ClineAsk, partialMessage?: string) => {
+					if (this.alwaysAllowAutomaticMode) {
+						return true
+					}
 					const { response, text, images } = await this.ask(type, partialMessage, false)
 					if (response !== "yesButtonClicked") {
 						if (response === "messageResponse") {
@@ -1183,7 +1193,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: undefined,
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", partialMessage, undefined, block.partial)
 								} else {
 									await this.ask("tool", partialMessage, block.partial).catch(() => {})
@@ -1201,7 +1211,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: absolutePath,
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", completeMessage, undefined, false) // need to be sending partialValue bool, since undefined has its own purpose in that the message is treated neither as a partial or completion of a partial, but as a single complete message
 								} else {
 									const didApprove = await askApproval("tool", completeMessage)
@@ -1233,7 +1243,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: "",
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", partialMessage, undefined, block.partial)
 								} else {
 									await this.ask("tool", partialMessage, block.partial).catch(() => {})
@@ -1253,7 +1263,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: result,
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", completeMessage, undefined, false)
 								} else {
 									const didApprove = await askApproval("tool", completeMessage)
@@ -1281,7 +1291,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: "",
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", partialMessage, undefined, block.partial)
 								} else {
 									await this.ask("tool", partialMessage, block.partial).catch(() => {})
@@ -1302,7 +1312,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: result,
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", completeMessage, undefined, false)
 								} else {
 									const didApprove = await askApproval("tool", completeMessage)
@@ -1334,7 +1344,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: "",
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", partialMessage, undefined, block.partial)
 								} else {
 									await this.ask("tool", partialMessage, block.partial).catch(() => {})
@@ -1358,7 +1368,7 @@ export class Cline {
 									...sharedMessageProps,
 									content: results,
 								} satisfies ClineSayTool)
-								if (this.alwaysAllowReadOnly) {
+								if (this.alwaysAllowReadOnly || this.alwaysAllowAutomaticMode) {
 									await this.say("tool", completeMessage, undefined, false)
 								} else {
 									const didApprove = await askApproval("tool", completeMessage)
