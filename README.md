@@ -134,6 +134,10 @@ To contribute to the project, start by exploring [open issues](https://github.co
     npm run install:all
     ```
 4. Launch by pressing `F5` (or `Run`->`Start Debugging`) to open a new VSCode window with the extension loaded. (You may need to install the [esbuild problem matchers extension](https://marketplace.visualstudio.com/items?itemName=connor4312.esbuild-problem-matchers) if you run into issues building the project.)
+5. To package the extension, run the following command:
+    ```bash
+    npm run package
+    ```
 
 </details>
 
